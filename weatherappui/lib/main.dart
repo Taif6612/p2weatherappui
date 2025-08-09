@@ -36,14 +36,17 @@ class WeatherScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Center(
+          child: Align(
+            alignment: Alignment.topCenter,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 500),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 20),
                     Text(
                       "North America",
                       style: GoogleFonts.poppins(
@@ -75,7 +78,10 @@ class WeatherScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    // Dynamic spacing based on screen height
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                    ),
                     Text(
                       "7-Days Forecasts",
                       style: GoogleFonts.poppins(
@@ -85,184 +91,312 @@ class WeatherScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // ---------- Forecast area aligned with Air Quality start ----------
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: SizedBox(
+                        height: 180, // increased height for taller cards
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final double arrowWidth = 1.0;
+                            final List<Widget> cards = [
+                              forecastCardThreeGradient(
+                                day: "Mon",
+                                temp: "19°C",
+                                imagePath: "assets/placeholder_weather.png",
+                                colors: const [
+                                  Color(0xFF3E2D8F),
+                                  Color(0xFF533595),
+                                  Color(0xFF9D52AC),
+                                ],
+                              ),
+                              forecastCard(
+                                day: "Tue",
+                                temp: "18°C",
+                                imagePath: "assets/placeholder_wweather.png",
+                                darkColor: const Color(0xFF3E2D8F),
+                                lightColor: const Color(0xFF8E78C8),
+                              ),
+                              forecastCard(
+                                day: "Wed",
+                                temp: "18°C",
+                                imagePath: "assets/placeholder_wweather.png",
+                                darkColor: const Color(0xFF3E2D8F),
+                                lightColor: const Color(0xFF8E78C8),
+                              ),
+                              forecastCard(
+                                day: "Thu",
+                                temp: "19°C",
+                                imagePath: "assets/placeholder_weather.png",
+                                darkColor: const Color(0xFF3E2D8F),
+                                lightColor: const Color(0xFF8E78C8),
+                              ),
+                            ];
+
+                            final double totalWidth = constraints.maxWidth;
+                            final double cardsAreaWidth = totalWidth - (arrowWidth * 2);
+                            const double cardWidth = 88.0; // increased card width
+                            final int n = cards.length;
+
+                            double spacing = (cardsAreaWidth - (n * cardWidth)) / (n - 1);
+                            final bool fitsNonScrollable = spacing >= 0;
+
+                            if (fitsNonScrollable) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: arrowWidth,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                                      onPressed: () {},
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                                      iconSize: 18,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: cardsAreaWidth,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        for (int i = 0; i < n; i++) ...[
+                                          SizedBox(width: cardWidth, child: cards[i]),
+                                          if (i != n - 1) SizedBox(width: spacing),
+                                        ]
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: arrowWidth,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                      onPressed: () {},
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                                      iconSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: arrowWidth,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                                      onPressed: () {},
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                                      iconSize: 18,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: Row(
+                                        children: cards.map((c) => Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                                          child: SizedBox(width: cardWidth, child: c),
+                                        )).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: arrowWidth,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                      onPressed: () {},
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                                      iconSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
                     SizedBox(
-                      height: 140,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Left Arrow (flush, no border)
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back_ios,
-                                color: Colors.white),
-                            onPressed: () {},
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
+                      height: MediaQuery.of(context).size.height * 0.03,
+                    ),
+
+                    // Air Quality (nudged right)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: const LinearGradient(
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                            colors: [
+                              Color(0xFF9D52AC),
+                              Color(0xFF3E2D8F),
+                            ],
                           ),
-                          Expanded(
-                            flex: 8,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 6),
+                              blurRadius: 18,
+                              spreadRadius: -6,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                // Monday with 3-color gradient
-                                forecastCardThreeGradient(
-                                  day: "Mon",
-                                  temp: "19°C",
-                                  imagePath:
-                                  "assets/placeholder_weather.png",
-                                  colors: const [
-                                    Color(0xFF3E2D8F), // Top
-                                    Color(0xFF533595), // Middle
-                                    Color(0xFF9D52AC), // Bottom
-                                  ],
+                                Image.asset(
+                                  "assets/placeholder_crosshair.png",
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.white70,
                                 ),
-                                // Tue, Wed, Thu with 2-color gradient
-                                forecastCard(
-                                  day: "Tue",
-                                  temp: "18°C",
-                                  imagePath:
-                                  "assets/placeholder_wweather.png",
-                                  darkColor: const Color(0xFF3E2D8F),
-                                  lightColor: const Color(0xFF8E78C8),
-                                ),
-                                forecastCard(
-                                  day: "Wed",
-                                  temp: "18°C",
-                                  imagePath:
-                                  "assets/placeholder_wweather.png",
-                                  darkColor: const Color(0xFF3E2D8F),
-                                  lightColor: const Color(0xFF8E78C8),
-                                ),
-                                forecastCard(
-                                  day: "Thu",
-                                  temp: "19°C",
-                                  imagePath:
-                                  "assets/placeholder_weather.png",
-                                  darkColor: const Color(0xFF3E2D8F),
-                                  lightColor: const Color(0xFF8E78C8),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "AIR QUALITY",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                          // Right Arrow (flush, no border)
-                          IconButton(
-                            icon: const Icon(Icons.arrow_forward_ios,
-                                color: Colors.white),
-                            onPressed: () {},
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: const LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [
-                            Color(0xFF9D52AC), // light purple bottom left
-                            Color(0xFF3E2D8F), // dark purple top right
+                            const SizedBox(height: 6),
+                            Text(
+                              "3 - Low Health Risk",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "See more",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white70,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(0, 6),
-                            blurRadius: 18,
-                            spreadRadius: -6,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                "assets/placeholder_crosshair.png",
-                                width: 24,
-                                height: 24,
-                                color: Colors.white70,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "AIR QUALITY",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "3 - Low Health Risk",
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            width: double.infinity,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.white24,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "See more",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white70,
-                                size: 16,
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        infoCard(
-                          title: "SUNRISE",
-                          value: "5:28 AM",
-                          subtitle: "Sunset: 7:25 PM",
-                          imagePath: "assets/placeholder_sunrise.png",
-                          darkColor: const Color(0xFF3E2D8F),
-                          lightColor: const Color(0xFF9D52AC),
-                        ),
-                        infoCard(
-                          title: "UV INDEX",
-                          value: "4",
-                          subtitle: "Moderate",
-                          imagePath: "assets/placeholder_sunrise.png",
-                          darkColor: const Color(0xFF3E2D8F),
-                          lightColor: const Color(0xFF9D52AC),
-                        ),
-                      ],
+
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.03,
+                    ),
+
+                    // SUNRISE & UV (nudged right)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.92),
+                                  width: 1.6,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black45,
+                                    offset: Offset(0, 6),
+                                    blurRadius: 12,
+                                    spreadRadius: -6,
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: infoCard(
+                                  title: "SUNRISE",
+                                  value: "5:28 AM",
+                                  subtitle: "Sunset: 7:25 PM",
+                                  imagePath: "assets/placeholder_sunrise.png",
+                                  darkColor: const Color(0xFF3E2D8F),
+                                  lightColor: const Color(0xFF9D52AC),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.92),
+                                  width: 1.6,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black45,
+                                    offset: Offset(0, 6),
+                                    blurRadius: 12,
+                                    spreadRadius: -6,
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: infoCard(
+                                  title: "UV INDEX",
+                                  value: "4",
+                                  subtitle: "Moderate",
+                                  imagePath: "assets/placeholder_sunrise.png",
+                                  darkColor: const Color(0xFF3E2D8F),
+                                  lightColor: const Color(0xFF9D52AC),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -274,7 +408,7 @@ class WeatherScreen extends StatelessWidget {
     );
   }
 
-// Regular 2-color forecast card
+  // ---------- forecast card widgets updated for larger size ----------
   static Widget forecastCard({
     required String day,
     required String temp,
@@ -283,11 +417,14 @@ class WeatherScreen extends StatelessWidget {
     required Color lightColor,
   }) {
     return Container(
-      width: 72,
-      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+      width: 88, // increased width
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8), // increased vertical padding
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.vertical(
+      top: Radius.circular(50),    // round top corners
+      bottom: Radius.circular(50), // round bottom corners
+    ),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -311,23 +448,22 @@ class WeatherScreen extends StatelessWidget {
           Text(
             temp,
             style: GoogleFonts.poppins(
-              fontSize: 15,
+              fontSize: 16, // slightly larger
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Image.asset(
             imagePath,
-            width: 26,
-            height: 26,
-            // color parameter removed here to show original icon colors
+            width: 32, // bigger icon
+            height: 32,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             day,
             style: GoogleFonts.poppins(
-              fontSize: 13,
+              fontSize: 14, // slightly larger
               fontWeight: FontWeight.w500,
               color: Colors.white70,
             ),
@@ -337,7 +473,6 @@ class WeatherScreen extends StatelessWidget {
     );
   }
 
-// 3-color forecast card for Monday
   static Widget forecastCardThreeGradient({
     required String day,
     required String temp,
@@ -345,11 +480,14 @@ class WeatherScreen extends StatelessWidget {
     required List<Color> colors,
   }) {
     return Container(
-      width: 72,
-      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+      width: 88, // increased width
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(50),    // round top corners
+          bottom: Radius.circular(50), // round bottom corners
+        ),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -370,23 +508,22 @@ class WeatherScreen extends StatelessWidget {
           Text(
             temp,
             style: GoogleFonts.poppins(
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Image.asset(
             imagePath,
-            width: 26,
-            height: 26,
-            // color parameter removed here to show original icon colors
+            width: 32,
+            height: 32,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             day,
             style: GoogleFonts.poppins(
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.white70,
             ),
@@ -405,7 +542,6 @@ class WeatherScreen extends StatelessWidget {
     required Color lightColor,
   }) {
     return Container(
-      width: 150,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -413,12 +549,10 @@ class WeatherScreen extends StatelessWidget {
           begin: Alignment.bottomLeft,
           end: Alignment.topRight,
           colors: [
-            lightColor, // light purple bottom left
-            darkColor,  // dark purple top right
+            lightColor,
+            darkColor,
           ],
         ),
-
-        border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
